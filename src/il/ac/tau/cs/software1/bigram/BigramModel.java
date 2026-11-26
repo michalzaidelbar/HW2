@@ -1,5 +1,6 @@
 package il.ac.tau.cs.software1.bigram;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -78,54 +79,71 @@ public class BigramModel {
     // Questions 1 - 5: implement these
     ///////////////////////////////////////////////////////////////////////////
 
-    /* 
-     * Reads a text file and returns its contents in a string.
-     * Replaces all white spaces / line breaks with a single space.
-     */
-    public String fileToString(String fileName) throws IOException {
-        String text_from_file = "";
-        File fromFile = new File(fileName);
-        FileReader fReader = new FileReader(fromFile);
-        char[] charRead = new char[1000];
-        int numRead;
-        while ((numRead = fReader.read(charRead)) != -1) {
-            String string = new String(charRead, 0, numRead);
-            string = string.replaceAll("\\s+", " ");
-            text_from_file += string;
-            }
-        fReader.close();
-        return text_from_file;
-    }
-
     /*
+     * Builds a vocabulary index containing all the valid tokens (words)
+     * within a text file.
      * @post: mVocabulary = prev(mVocabulary)
      * @post: mBigramCounts = prev(mBigramCounts)
      */
     public String[] buildVocabularyIndex(String fileName) throws IOException { // Question 1
         String[] temp_index = new String[MAX_VOCABULARY_SIZE];
-        String file_str = fileToString(fileName);
-        String[] tokens = file_str.split(" ");
-        int temp_len = -1;
+        
+        // read text from file (use bufferedReader)
+        StringBuilder text_from_file = new StringBuilder();
+        File fromFile = new File(fileName);
+        BufferedReader bufferedReader = new BufferedReader(new FileReader(fromFile));
+        String line;
+        while ((line = bufferedReader.readLine()) != null) {
+            text_from_file.append(line + "\n");
+            }
+        bufferedReader.close();
+
+        String file_str = text_from_file.toString();
+        String[] tokens = file_str.split("\\s+");
+        int temp_len = 0;
         for (int i = 0; i < tokens.length; i++) {
             String word = normalizeWord(tokens[i]);
             if (findIndex(temp_index, word) == ELEMENT_NOT_FOUND) {
                 // if the word is not already added to the temp_index, add it.
-                temp_len++;
                 temp_index[temp_len] = word;
+                temp_len++;
             }
         } 
         // only return the ones with values in them
-        String[] vocab_index = Arrays.copyOfRange(temp_index, 0, temp_len);
+        String[] vocab_index = Arrays.copyOfRange(temp_index, 0, temp_len-1);
         return vocab_index;
     }
 
     /*
+     * Counts the number of appearances of each pair of words adjacently.
+     * It only counts if they're on the same line.
      * @post: mVocabulary = prev(mVocabulary)
      * @post: mBigramCounts = prev(mBigramCounts)
      */
     public int[][] buildCountsArray(String fileName, String[] vocabulary) throws IOException { // Question 2
-        // TODO: implement
-        return null;
+        int[][] bigram_counts = new int[vocabulary.length][vocabulary.length]; 
+
+        File fromFile = new File(fileName);
+        BufferedReader bufferedReader = new BufferedReader(new FileReader(fromFile));
+        String line;
+        while ((line = bufferedReader.readLine()) != null) {
+            String[] words = line.split("\\s+");
+            int first_word_idx;
+            int sec_word_idx;
+            for (int i = 0; i < words.length; i++) {
+                words[i] = normalizeWord(words[i]);
+                if (i > 0) {
+                    first_word_idx = findIndex(vocabulary, words[i-1]);
+                    sec_word_idx = findIndex(vocabulary, words[i]);
+                    if (first_word_idx != ELEMENT_NOT_FOUND && sec_word_idx != ELEMENT_NOT_FOUND) {
+                        bigram_counts[first_word_idx][sec_word_idx] += 1;
+                    };
+                }
+            }
+            }
+        bufferedReader.close();
+
+        return bigram_counts;
     }
 
     /*
