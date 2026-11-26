@@ -191,22 +191,25 @@ public class BigramModel {
         BufferedReader vocReader = new BufferedReader(new FileReader(vocFile));
         // find number of words for initializing mVocab list
         int num_words = Integer.parseInt(vocReader.readLine().split(" ")[0]);
-        String[] mVocabulary = new String[num_words];
+        String[] newVocabulary = new String[num_words];
         String line;
         while ((line = vocReader.readLine()) != null) {
             String[] words = line.split(",");
-            mVocabulary[Integer.parseInt(words[0])] = words[1];
+            newVocabulary[Integer.parseInt(words[0])] = words[1];
             }
         vocReader.close();
 
         File cntFile = new File(counts_filename);
         BufferedReader cntReader = new BufferedReader(new FileReader(cntFile));
-        int[][] mBigramCounts = new int[num_words][num_words];
+        int[][] newBigramCounts = new int[num_words][num_words];
         while ((line = cntReader.readLine()) != null) {
             String[] counts = line.split("[,:]");
-            mBigramCounts[Integer.parseInt(counts[0])][Integer.parseInt(counts[1])] = Integer.parseInt(counts[2]);
+            newBigramCounts[Integer.parseInt(counts[0])][Integer.parseInt(counts[1])] = Integer.parseInt(counts[2]);
         } 
         cntReader.close();
+
+        mVocabulary = newVocabulary;
+        mBigramCounts = newBigramCounts;
     }
 
     /*
