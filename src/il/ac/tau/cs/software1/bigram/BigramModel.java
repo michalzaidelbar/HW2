@@ -110,7 +110,7 @@ public class BigramModel {
             }
         } 
         // only return the ones with values in them
-        String[] vocab_index = Arrays.copyOfRange(temp_index, 0, temp_len-1);
+        String[] vocab_index = Arrays.copyOfRange(temp_index, 0, temp_len);
         return vocab_index;
     }
 
