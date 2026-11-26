@@ -104,7 +104,7 @@ public class BigramModel {
         int temp_len = 0;
         for (int i = 0; i < tokens.length; i++) {
             String word = normalizeWord(tokens[i]);
-            if (findIndex(temp_index, word) == ELEMENT_NOT_FOUND && word != null) {
+            if (findIndex(temp_index, word) == ELEMENT_NOT_FOUND && word != null && temp_len < MAX_VOCABULARY_SIZE) {
                 // if the word is not already added to the temp_index, add it.
                 temp_index[temp_len] = word;
                 temp_len++;
