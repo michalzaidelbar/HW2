@@ -1,6 +1,7 @@
 package il.ac.tau.cs.software1.bigram;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -94,7 +95,7 @@ public class BigramModel {
         BufferedReader bufferedReader = new BufferedReader(new FileReader(fromFile));
         String line;
         while ((line = bufferedReader.readLine()) != null) {
-            text_from_file.append(line + "\n");
+            text_from_file.append(line + System.lineSeparator());
             }
         bufferedReader.close();
 
@@ -146,12 +147,36 @@ public class BigramModel {
         return bigram_counts;
     }
 
-    /*
+    /* 
+     * Saves the model into two text files: 
+     * the vocabulary into fileName.voc, and the counts into fileName.counts.
      * @pre: the method initModel was called (the language model is initialized)
      * @pre: fileName is a legal file path
      */
     public void saveModel(String fileName) throws IOException { // Question 3
-        // TODO: implement
+        String vocab_filename = fileName + VOC_FILE_SUFFIX;
+        String counts_filename = fileName + COUNTS_FILE_SUFFIX;
+
+        File vocFile = new File(vocab_filename);
+        BufferedWriter vocWriter = new BufferedWriter(new FileWriter(vocFile));
+        File cntFile = new File(counts_filename);
+        BufferedWriter cntWriter = new BufferedWriter(new FileWriter(cntFile));
+
+        String num_words = Integer.toString(mVocabulary.length) + " words" + System.lineSeparator();  
+        vocWriter.write(num_words);
+        for (int i = 0; i < mVocabulary.length; i++) {
+            String line = Integer.toString(i) + "," + mVocabulary[i] + System.lineSeparator();
+            vocWriter.write(line);
+            for (int j = 0; j < mVocabulary.length; j++) {
+                if (mBigramCounts[i][j] != 0) {
+                    String bigram = Integer.toString(i) + "," + Integer.toString(j) 
+                        + ":" + Integer.toString(mBigramCounts[i][j]) + System.lineSeparator();
+                    cntWriter.write(bigram);
+                }
+            }
+        }
+        vocWriter.close();
+        cntWriter.close();
     }
 
     /*
