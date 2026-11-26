@@ -1,6 +1,10 @@
 package il.ac.tau.cs.software1.bigram;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Locale;
 
 public class BigramModel {
@@ -74,13 +78,45 @@ public class BigramModel {
     // Questions 1 - 5: implement these
     ///////////////////////////////////////////////////////////////////////////
 
+    /* 
+     * Reads a text file and returns its contents in a string.
+     * Replaces all white spaces / line breaks with a single space.
+     */
+    public String fileToString(String fileName) throws IOException {
+        String text_from_file = "";
+        File fromFile = new File(fileName);
+        FileReader fReader = new FileReader(fromFile);
+        char[] charRead = new char[1000];
+        int numRead;
+        while ((numRead = fReader.read(charRead)) != -1) {
+            String string = new String(charRead, 0, numRead);
+            string = string.replaceAll("\\s+", " ");
+            text_from_file += string;
+            }
+        fReader.close();
+        return text_from_file;
+    }
+
     /*
      * @post: mVocabulary = prev(mVocabulary)
      * @post: mBigramCounts = prev(mBigramCounts)
      */
     public String[] buildVocabularyIndex(String fileName) throws IOException { // Question 1
-        // TODO: implement
-        return null;
+        String[] temp_index = new String[MAX_VOCABULARY_SIZE];
+        String file_str = fileToString(fileName);
+        String[] tokens = file_str.split(" ");
+        int temp_len = -1;
+        for (int i = 0; i < tokens.length; i++) {
+            String word = normalizeWord(tokens[i]);
+            if (findIndex(temp_index, word) == ELEMENT_NOT_FOUND) {
+                // if the word is not already added to the temp_index, add it.
+                temp_len++;
+                temp_index[temp_len] = word;
+            }
+        } 
+        // only return the ones with values in them
+        String[] vocab_index = Arrays.copyOfRange(temp_index, 0, temp_len);
+        return vocab_index;
     }
 
     /*
