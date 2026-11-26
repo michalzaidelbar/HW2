@@ -219,8 +219,23 @@ public class BigramModel {
      * @post: if sentence is probable, according to the model, $ret = true, else, $ret = false
      */
     public boolean isLegalSentence(String sentence) { // Question 5
-        // TODO: implement
-        return false;
+        if (sentence == "") {return true;} // empty string
+        String[] sentenceLst = sentence.split(" ");
+        if (sentenceLst.length == 1) { // single word - check if in vocab list
+            if (findIndex(mVocabulary, sentence) != ELEMENT_NOT_FOUND) {return true;}
+            else {return false;}
+        }
+        for (int i = 0; i < sentenceLst.length - 1; i++) {
+            int first_word_idx = findIndex(mVocabulary, sentenceLst[i]);
+            int sec_word_idx = findIndex(mVocabulary, sentenceLst[i+1]);
+            if (first_word_idx == ELEMENT_NOT_FOUND || sec_word_idx == ELEMENT_NOT_FOUND) {
+                return false; // either word isn't in the vocabulary
+            }
+            if (mBigramCounts[first_word_idx][sec_word_idx] == 0) {
+                return false; // the bigram does not appear 
+            }
+        }
+        return true;
     }
 
     ///////////////////////////////////////////////////////////////////////////
